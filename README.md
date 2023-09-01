@@ -33,3 +33,5 @@ Options:
   --cache_dir TEXT  Directory to use to cache responses
   --help            Show this message and exit.
 ```
+
+Based on Brett Walker's kubra-scraper: https://github.com/openkentuckiana/kubra-scraper
