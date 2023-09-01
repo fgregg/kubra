@@ -34,4 +34,6 @@ Options:
   --help            Show this message and exit.
 ```
 
+## Credit
+
 Based on Brett Walker's kubra-scraper: https://github.com/openkentuckiana/kubra-scraper
