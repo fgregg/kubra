@@ -111,15 +111,72 @@ class KubraScraper(scrapelib.Scraper):
         return response.status_code < 400 or response.status_code == 404
 
 
+def enumerate_last(iterable):
+    it = iter(iterable)
+    try:
+        last = next(it)
+    except StopIteration:
+        return
+    while True:
+        try:
+            current = next(it)
+            yield last, False
+            last = current
+        except StopIteration:
+            yield last, True
+            break
+
+
+def stream_array(iterable, start_indent=0):
+    first = True
+    for item, last in enumerate_last(iterable):
+        if first:
+            click.echo("[")
+            first = False
+        click.echo(
+            json.dumps(item).rstrip() + ("" if last else ","),
+        )
+    click.echo("]")
+
+
+def _to_geojson(outages):
+    click.echo('{"type": "FeatureCollection", "features": ')
+
+    def features():
+        for outage in outages:
+            geom = outage.pop("geom")
+            feature = {"type": "Feature", "properties": outage}
+            if area := geom.get("a"):
+                rings = []
+                for polyline_ring in area:
+                    rings.append(
+                        [point[::-1] for point in polyline.decode(polyline_ring)]
+                    )
+                feature["geometry"] = {"type": "Polygon", "coordinates": rings}
+            else:
+                point = polyline.decode(geom["p"][0])[0][::-1]
+                feature["geometry"] = {"type": "Point", "coordinates": point}
+
+            yield feature
+
+    stream_array(features())
+    click.echo("}")
+
+
 @click.command()
 @click.argument("instance_id", type=str)
 @click.argument("view_id", type=str)
 @click.option("--cache_dir", type=str, help="Directory to use to cache responses")
-def main(instance_id, view_id, cache_dir):
+@click.option(
+    "--raw",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Return a json array of raw outage data",
+)
+def main(instance_id, view_id, cache_dir, raw):
     """
-    Download all the outages of a storm event associated with an INSTANCE_ID and VIEW_ID from kubra.io. Outputs a JSON array of outages.
-
-    Note that the geometries are encoded as Google polylines.
+    Download all the outages of a storm event associated with an INSTANCE_ID and VIEW_ID from kubra.io. Outputs a GeoJSON of outages.
 
     To find values for INSTANCE_ID and VIEW_ID, go to the outage website, open up Developer Tools and look for a network request that looks like:
 
@@ -142,5 +199,7 @@ def main(instance_id, view_id, cache_dir):
         scraper.cache_storage = cache
         scraper.cache_write_only = False
 
-    outages = list(scraper.scrape())
-    click.echo(json.dumps(outages))
+    if raw:
+        stream_array(scraper.scrape())
+    else:
+        _to_geojson(scraper.scrape())
