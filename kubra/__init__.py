@@ -178,6 +178,8 @@ def main(instance_id, view_id, cache_dir, raw):
     """
     Download all the outages of a storm event associated with an INSTANCE_ID and VIEW_ID from kubra.io. Outputs a GeoJSON of outages.
 
+    Note that the GeoJSON may be a mix of points and polygons.
+
     To find values for INSTANCE_ID and VIEW_ID, go to the outage website, open up Developer Tools and look for a network request that looks like:
 
     https://kubra.io/stormcenter/api/v1/stormcenters/4fbb3ad3-e01d-4d71-9575-d453769c1171/views/8ed2824a-bd92-474e-a7c4-848b812b7f9b/currentState?preview=false
