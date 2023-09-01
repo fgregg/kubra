@@ -36,4 +36,4 @@ Options:
 
 ## Credit
 
-Based on Brett Walker's kubra-scraper: https://github.com/openkentuckiana/kubra-scraper
+Based on Bret Walker's kubra-scraper: https://github.com/openkentuckiana/kubra-scraper
