@@ -14,9 +14,9 @@ To use:
 Usage: kubra [OPTIONS] INSTANCE_ID VIEW_ID
 
   Download all the outages of a storm event associated with an INSTANCE_ID and
-  VIEW_ID from kubra.io. Outputs a JSON array of outages.
+  VIEW_ID from kubra.io. Outputs a GeoJSON of outages.
 
-  Note that the geometries are encoded as Google polylines.
+  Note that the GeoJSON may be a mix of points and polygons.
 
   To find values for INSTANCE_ID and VIEW_ID, go to the outage website, open
   up Developer Tools and look for a network request that looks like:
@@ -31,9 +31,9 @@ Usage: kubra [OPTIONS] INSTANCE_ID VIEW_ID
 
 Options:
   --cache_dir TEXT  Directory to use to cache responses
+  --raw             Return a json array of raw outage data
   --help            Show this message and exit.
 ```
-
 ## Credit
 
 Based on Bret Walker's kubra-scraper: https://github.com/openkentuckiana/kubra-scraper
